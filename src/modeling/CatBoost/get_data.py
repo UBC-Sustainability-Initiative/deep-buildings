@@ -2,12 +2,12 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 
-def generate_data(df, freq: str, scenario=2, regr_vars = None, 
+def generate_data(df, freq: str, scenario=None, regr_vars = None, 
                   multiplier = None, 
                   baseline = None,
                   look_back = None,
                   look_ahead = None, 
-                  corr_plot=False):
+                  corr_plot=None):
     '''
     
     freq: either 'D' or 'H'
