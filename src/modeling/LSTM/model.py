@@ -94,6 +94,7 @@ class Model(nn.Module):
             print()
                     
     def save(self, fname):
+        print("Saving output file")
         with open(fname, 'wb') as outfile:
             pickle.dump(self.state_dict(), outfile, pickle.HIGHEST_PROTOCOL)
 #        

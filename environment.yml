@@ -13,3 +13,4 @@ dependencies:
    - watermark
    - pytest
  - torch 
+ - catboost

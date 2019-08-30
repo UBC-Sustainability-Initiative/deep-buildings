@@ -1,9 +1,9 @@
 import click
 import sys
+sys.path.append('src')
 from LSTM.model import Model 
 from LSTM.get_data import generate_data, split_train_test
 from data.preprocess import read_processed_data
-sys.path.append('src')
 
 @click.command()
 @click.argument('input_file', type=click.Path(exists=True, readable=True, dir_okay=False))
