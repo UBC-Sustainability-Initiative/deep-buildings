@@ -15,7 +15,7 @@ from data.preprocess import read_processed_data
 @click.option('--regr_vars', default = ['solar_radiation','temp','wind_dir',
                                         'hum_ratio','windspeed','weekday',
                                         'week'], show_default=True)
-@click.option('--multipler', default = [-777,-777,-999,-999,-999,-999,-999],
+@click.option('--multiplier', default = [-777,-777,-999,-999,-999,-999,-999],
               show_default = True)
 @click.option('--baseline', default = [0,0,0,0,0,0,0], show_default = True)
 
@@ -23,7 +23,7 @@ from data.preprocess import read_processed_data
 
 @click.option('--look_ahead', default = [0,0,0,0,0,0,0], show_default = True)
 
-#@click.option('--corr_plot', default = False, show_default = True)
+@click.option('--corr_plot', default = False, show_default = True)
 
 @click.option('--test_year', default = 2017, show_default=True)
 
