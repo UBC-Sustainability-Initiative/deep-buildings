@@ -25,23 +25,23 @@ def generate_data(df, freq: str, scenario=None, regr_vars = None,
     if multiplier: 
         multiplier = multiplier
     else: 
-        multiplier = np.ones(len(regression_variables))
+        multiplier = list(np.ones(len(regression_variables), dtype=int))
         
     if baseline: 
         baseline_values = baseline
         
     else:
-        baseline_values = np.zeros(len(regression_variables))
+        baseline_values = list(np.zeros(len(regression_variables),dtype=int))
     
     if look_back:
         look_back = look_back
     else: 
-        look_back = np.zeros(len(regression_variables))
+        look_back = list(np.zeros(len(regression_variables),dtype=int))
     
     if look_ahead:
         look_ahead = look_ahead
     else: 
-        look_ahead = np.zeros(len(regression_variables))
+        look_ahead = list(np.zeros(len(regression_variables),dtype=int))
     
     if freq == 'D':
 
