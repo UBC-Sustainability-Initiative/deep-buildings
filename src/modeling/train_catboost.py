@@ -25,10 +25,10 @@ from data.preprocess import read_processed_data
 
 @click.option('--corr_plot', default = False, show_default = True)
 
-@click.option('--test_year', default = 2017, show_default=True)
+#@click.option('--test_year', default = 2017, show_default=True)
 
 def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
-         look_back, look_ahead, corr_plot, test_year):
+         look_back, look_ahead, corr_plot, test_year=2017):
     
     df = read_processed_data(input_file)
     
