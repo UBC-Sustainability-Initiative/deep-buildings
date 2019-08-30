@@ -27,8 +27,10 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
          look_back, look_ahead, corr_plot, test_year):
     
     df = read_processed_data(input_file)
-    X, y= generate_data(df, freq='D', regr_vars=regr_vars, 
-                        hist_keys = hist_keys, hist_steps=2)
+    
+    X, y= generate_data(df, freq='D', scenario, regr_vars, multiplier, 
+                        baseline, look_back, look_ahead, corr_plot)
+    
     trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
     print("Generated data for LSTM")
     print('Training model...')
