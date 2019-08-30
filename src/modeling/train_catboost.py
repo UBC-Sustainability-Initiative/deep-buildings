@@ -38,12 +38,12 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
                         look_back = look_back, look_ahead = look_ahead, 
                         corr_plot= corr_plot)
     
-#    trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
-#    print("Generated data for CatBoost")
-#    print('Training model...')
-#    model = CatBoostModel()
-#    model.train(trainX, trainY)
-#    model.save(output_file)
+    trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
+    print("Generated data for CatBoost")
+    print('Training model...')
+    model = CatBoostModel()
+    model.train(trainX, trainY)
+    model.save(output_file)
 
 if __name__ == '__main__':
     main()
