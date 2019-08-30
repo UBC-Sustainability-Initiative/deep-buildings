@@ -28,14 +28,16 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
     
     df = read_processed_data(input_file)
     
-    X, y= generate_data(df, freq='D', scenario, regr_vars, multiplier, 
-                        baseline, look_back, look_ahead, corr_plot)
+    X, y= generate_data(df, freq='D', scenario=scenario, regr_vars = regr_vars,
+                        multiplier = multiplier, baseline= baseline, 
+                        look_back = look_back, look_ahead = look_ahead, 
+                        corr_plot= corr_plot)
     
     trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
-    print("Generated data for LSTM")
+    print("Generated data for CatBoost")
     print('Training model...')
-    model = Model(dict(features=5, forecast_horizon=1)).cuda()
-    model.batch_train(trainX, trainY, n_epochs=n_epochs, lr=0.0005)
+    model = CatBoostModel()
+    model.train(trainX, trainY)
     model.save(output_file)
 
 if __name__ == '__main__':
