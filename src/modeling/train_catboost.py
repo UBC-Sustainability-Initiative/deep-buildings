@@ -11,7 +11,7 @@ from data.preprocess import read_processed_data
 @click.command()
 @click.argument('input_file', type=click.Path(exists=True, readable=True, dir_okay=False))
 @click.argument('output_file', type=click.Path(writable=True, dir_okay=False))
-@click.argument('scenario', default = 2, show_default=True)
+@click.option('scenario', default = 2, show_default=True)
 @click.option('--regr_vars', default = ['solar_radiation','temp','wind_dir',
                                         'hum_ratio','windspeed','weekday',
                                         'week'], show_default=True)
@@ -28,7 +28,7 @@ from data.preprocess import read_processed_data
 @click.option('--test_year', default = 2017, show_default=True)
 
 def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
-         look_back, look_ahead, corr_plot=False, test_year):
+         look_back, look_ahead, corr_plot, test_year):
     
     df = read_processed_data(input_file)
     
