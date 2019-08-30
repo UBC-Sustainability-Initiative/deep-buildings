@@ -16,7 +16,7 @@ sys.path.append('src')
                                         'temp','wind_dir','windspeed',
                                         'L3S_Office_1'], show_default=True)
 @click.option('--test_year', default = 2017, show_default=True)
-def main(input_file, output_file, hist_keys, regr_vars, test_year):
+def main(input_file, output_file, hist_keys, regr_vars, test_year, n_epochs):
     df = read_processed_data(input_file)
     X, y= generate_data(df, freq='D', regr_vars=regr_vars, 
                         hist_keys = hist_keys, hist_steps=2)
@@ -24,7 +24,7 @@ def main(input_file, output_file, hist_keys, regr_vars, test_year):
     print("Generated data for LSTM")
     print('Training model...')
     model = Model(dict(features=5, forecast_horizon=1)).cuda()
-    model.batch_train(trainX, trainY, n_epochs=450, lr=0.0005)
+    model.batch_train(trainX, trainY, n_epochs=n_epochs, lr=0.0005)
     model.save(output_file)
 
 if __name__ == '__main__':
