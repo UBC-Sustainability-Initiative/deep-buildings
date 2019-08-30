@@ -6,8 +6,7 @@ def generate_data(df, freq: str, scenario=None, regr_vars = None,
                   multiplier = None, 
                   baseline = None,
                   look_back = None,
-                  look_ahead = None, 
-                  corr_plot=None):
+                  look_ahead = None):
     '''
     
     freq: either 'D' or 'H'
