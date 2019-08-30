@@ -4,5 +4,5 @@ data/processed/processed.pkl:
 clean:
 	rm -f data/processed/*.pkl
 
-src/models/LSTM/lstm.model: data/processed/processed.pkl
+models/LSTM/lstm.model: data/processed/processed.pkl
    python3 src/modeleling/train_lstm.py $< $@
