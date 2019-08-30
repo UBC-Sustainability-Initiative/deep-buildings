@@ -7,5 +7,5 @@ models/LSTM/lstm.model: data/processed/processed.pkl
 data/processed/processed4clf.pkl: 
 	python3 src/data/preprocess.py "data/interim/CIRS_interim.pkl" $@
 
-models/CatBoost/CatBoost.model: data/processed/processed.pkl
-	python3 src/modeling/train_lstm.py $< $@
+models/CatBoost/CatBoost.model: data/processed/processed4clf.pkl
+	python3 src/modeling/train_catboost.py $< $@
