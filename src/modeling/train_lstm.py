@@ -16,6 +16,8 @@ sys.path.append('src')
                                         'temp','wind_dir','windspeed',
                                         'L3S_Office_1'], show_default=True)
 @click.option('--test_year', default = 2017, show_default=True)
+@click.option('--n_epochs', default = 450, show_default=True)
+
 def main(input_file, output_file, hist_keys, regr_vars, test_year, n_epochs):
     df = read_processed_data(input_file)
     X, y= generate_data(df, freq='D', regr_vars=regr_vars, 
