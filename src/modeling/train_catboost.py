@@ -18,13 +18,17 @@ from data.preprocess import read_processed_data
 @click.option('--multipler', default = [-777,-777,-999,-999,-999,-999,-999],
               show_default = True)
 @click.option('--baseline', default = [0,0,0,0,0,0,0], show_default = True)
+
 @click.option('--look_back', default = [2,3,1,2,1,0,0], show_default = True)
+
 @click.option('--look_ahead', default = [0,0,0,0,0,0,0], show_default = True)
-@click.option('--corr_plot', default = False, show_default = True)
+
+#@click.option('--corr_plot', default = False, show_default = True)
+
 @click.option('--test_year', default = 2017, show_default=True)
 
 def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
-         look_back, look_ahead, corr_plot, test_year):
+         look_back, look_ahead, corr_plot=False, test_year):
     
     df = read_processed_data(input_file)
     
