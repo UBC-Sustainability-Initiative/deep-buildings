@@ -13,9 +13,9 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
     
 
     '''
-    
+    X = df
     y = df['target_data']
-    X = df.drop(columns=['target_data'])
+    X = X.drop(columns=['target_data'])
     
     if regr_vars:
         regression_variables = regr_vars
@@ -44,7 +44,7 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
         look_ahead = list(np.zeros(len(regression_variables),dtype=int))
     
     if freq == 'D':
-
+    
       # Synchronize X and y data by ensuring consistency of timestamps and all
       # 'na' values dropped
       X['y_data']=y
@@ -101,7 +101,7 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
           for x in range(look_ahead[i]):
             header_str = 'next_'+regression_variables[i]+str(x+1)
             Xp[header_str]=Xp[regression_variables[i]].shift(-x-1)
-
+    
       X = Xp # Reframe X based on Xp
     
       if scenario == 1:
@@ -138,26 +138,26 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
       elif scenario == 2:
         yp=y[y>27].resample('D').count()
         yp[yp>0]=1
-
-
+    
+    
       # Re-synchronize X and y data by ensuring consistency of timestamps and all 'na' values dropped
       X['y_data']=yp
       X=X.dropna()
       y=X['y_data']
       
-#      if corr_plot: 
-#          import matplotlib.pyplot as plt
-#          import seaborn as sns
-#          plt.figure()
-#          sns.heatmap(X.corr())
-#          X = X.dropna()
-#          y=X['y_data']
-#          # Print correlation values to help hint at what regression parameters to choose
-#          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
-#          print(CorrMatrix.sort_values(by=['y_data']))
-#    
+    #      if corr_plot: 
+    #          import matplotlib.pyplot as plt
+    #          import seaborn as sns
+    #          plt.figure()
+    #          sns.heatmap(X.corr())
+    #          X = X.dropna()
+    #          y=X['y_data']
+    #          # Print correlation values to help hint at what regression parameters to choose
+    #          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
+    #          print(CorrMatrix.sort_values(by=['y_data']))
+    #    
       X = X.drop(columns=['y_data'], axis=1)   
-
+    
     if freq == 'H':
       X_historyKeys=['solar_radiation','temp','wind_dir','hum_ratio','hours',
                      'windspeed']
@@ -175,45 +175,46 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
         if X_drop[i]==1:
           X=X.drop(columns=[X_historyKeys[i]])
     
-#      # Add in is weekend, rolling std features 
-#      weekends = np.where(X.index.dayofweek-5>=0, 1, 0)
-#      X['is_weekend'] = weekends
-#      X['rolling_std_4'] = X['temp'].rolling(4).std()
-#      X['rolling_std_3'] = X['temp'].rolling(3).std()
-#      X['rolling_std_2'] = X['temp'].rolling(2).std()
-#      X['rolling_std_mean_3'] = X['temp'].rolling(3).std().rolling(3).mean()
-#      X['temp_gradient'] = np.gradient(X['temp'].values)
-#    
-#      # Add if previous value exceeds 25 degrees
-#      X['future_exceedence'] = np.where(X['temp'].shift(-2)>=27, 1, 0)
-#      X['prev_exceedence'] = np.where(X['temp'].shift(2)>=27, 1, 0)
-#    
-#      # Add last 3 hours of experienced indoor temperature
-#    
-#      X['hist_indoor'] = X['indoorTemp'].shift(3)
-#      X['hist_indoor_diff'] = X['indoorTemp'].shift(-3).diff(2)
-#    
-#      new_regressors = ['is_weekend', 'rolling_std_mean_3', 'future_exceedence','hist_indoor', 'temp_gradient']
-
+    #      # Add in is weekend, rolling std features 
+    #      weekends = np.where(X.index.dayofweek-5>=0, 1, 0)
+    #      X['is_weekend'] = weekends
+    #      X['rolling_std_4'] = X['temp'].rolling(4).std()
+    #      X['rolling_std_3'] = X['temp'].rolling(3).std()
+    #      X['rolling_std_2'] = X['temp'].rolling(2).std()
+    #      X['rolling_std_mean_3'] = X['temp'].rolling(3).std().rolling(3).mean()
+    #      X['temp_gradient'] = np.gradient(X['temp'].values)
+    #    
+    #      # Add if previous value exceeds 25 degrees
+    #      X['future_exceedence'] = np.where(X['temp'].shift(-2)>=27, 1, 0)
+    #      X['prev_exceedence'] = np.where(X['temp'].shift(2)>=27, 1, 0)
+    #    
+    #      # Add last 3 hours of experienced indoor temperature
+    #    
+    #      X['hist_indoor'] = X['indoorTemp'].shift(3)
+    #      X['hist_indoor_diff'] = X['indoorTemp'].shift(-3).diff(2)
+    #    
+    #      new_regressors = ['is_weekend', 'rolling_std_mean_3', 'future_exceedence','hist_indoor', 'temp_gradient']
+    
       X['y_data']=y
-#      if corr_plot: 
-#          import matplotlib.pyplot as plt
-#          import seaborn as sns
-#          plt.figure()
-#          sns.heatmap(X.corr())
-#          X = X.dropna()
-#          y=X['y_data']
+    #      if corr_plot: 
+    #          import matplotlib.pyplot as plt
+    #          import seaborn as sns
+    #          plt.figure()
+    #          sns.heatmap(X.corr())
+    #          X = X.dropna()
+    #          y=X['y_data']
         
-#          # Print correlation values to help hint at what regression parameters
-#          # to choose
-#          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
-#          print(CorrMatrix.sort_values(by=['y_data']))
-#        
+    #          # Print correlation values to help hint at what regression parameters
+    #          # to choose
+    #          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
+    #          print(CorrMatrix.sort_values(by=['y_data']))
+    #        
       X = X.drop(columns=['y_data'], axis=1)
     
       X=X.iloc[2:]
       y=y.iloc[2:]
-      return X, y 
+      
+    return X, y 
         
 def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None):
     

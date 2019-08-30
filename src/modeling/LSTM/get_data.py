@@ -11,9 +11,9 @@ def generate_data(df, freq: str, regr_vars = None, hist_keys = None,
 
     
     '''
-    
+    X = df
     y = df['target_data']
-    X = df.drop(columns=['target_data'])
+    X = X.drop(columns=['target_data'])
     
     if regr_vars:
         regression_variables = regr_vars
