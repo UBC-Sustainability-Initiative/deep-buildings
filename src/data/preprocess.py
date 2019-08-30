@@ -62,20 +62,6 @@ def read_processed_data(fname='data/processed/processed.pkl'):
 @click.option('--target', default = 'indoorTemp', show_default=True)
 def main(input_file: str, output_file: str, regr_vars=None, target=None):
     print('Preprocessing data...')
-    
-#    if regr_vars:
-#        regr_vars = regr_vars
-#    else: 
-#        regr_vars = ['hum_ratio','hours','solar_radiation','temp','wind_dir',
-#                     'windspeed','L3S_Office_1']
-#        print('Using variables: ', regr_vars)
-#    
-#    if target:
-#        target = target
-#    else:
-#        target = 'indoorTemp'
-#        print('Using target: ', target)
-        
     df = read_interim_data(input_file)
     df = preprocess_data(df, regr_vars, target)
     df.to_pickle(output_file)

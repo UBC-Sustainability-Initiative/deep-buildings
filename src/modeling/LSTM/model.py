@@ -6,7 +6,6 @@ import sys
 import pickle
 import time
 import numpy as np
-import os
 sys.path.append('src')
 
 

@@ -12,3 +12,4 @@ dependencies:
  - pip:
    - watermark
    - pytest
+ - torch 
