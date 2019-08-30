@@ -8,7 +8,6 @@ import time
 import numpy as np
 sys.path.append('src')
 
-
 def create_dataset(trainX, trainY, look_back, forecast_horizon=1, batch_size=1):
     
     batch_x, batch_y, batch_z = [], [], []
@@ -95,7 +94,7 @@ class Model(nn.Module):
     def save(self, fname):
         fname = time.strftime("%Y%m%d-%H%M%S") + '_'+fname
         with open(fname, 'wb') as outfile:
-            pickle.dump(model.state_dict(), outfile, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.state_dict(), outfile, pickle.HIGHEST_PROTOCOL)
 #        
 #    def load(self, fname):
 #        with open(fname, 'rb') as infile:
