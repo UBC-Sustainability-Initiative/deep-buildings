@@ -94,7 +94,6 @@ class Model(nn.Module):
             print()
                     
     def save(self, fname):
-        fname = time.strftime("%Y%m%d-%H%M%S") + '_'+fname
         with open(fname, 'wb') as outfile:
             pickle.dump(self.state_dict(), outfile, pickle.HIGHEST_PROTOCOL)
 #        
