@@ -15,6 +15,7 @@ from data.preprocess import read_processed_data
 @click.option('--regr_vars', default = ['solar_radiation','temp','wind_dir',
                                         'hum_ratio','windspeed','weekday',
                                         'week'], show_default=True)
+
 @click.option('--multiplier', default = [-777,-777,-999,-999,-999,-999,-999],
               show_default = True)
 @click.option('--baseline', default = [0,0,0,0,0,0,0], show_default = True)
@@ -25,7 +26,7 @@ from data.preprocess import read_processed_data
 
 @click.option('--corr_plot', default = False, show_default = True)
 
-#@click.option('--test_year', default = 2017, show_default=True)
+@click.option('--test_year', default = 2017, show_default=True)
 
 def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
          look_back, look_ahead, corr_plot, test_year):
@@ -37,12 +38,12 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
                         look_back = look_back, look_ahead = look_ahead, 
                         corr_plot= corr_plot)
     
-    trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
-    print("Generated data for CatBoost")
-    print('Training model...')
-    model = CatBoostModel()
-    model.train(trainX, trainY)
-    model.save(output_file)
+#    trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
+#    print("Generated data for CatBoost")
+#    print('Training model...')
+#    model = CatBoostModel()
+#    model.train(trainX, trainY)
+#    model.save(output_file)
 
 if __name__ == '__main__':
     main()
