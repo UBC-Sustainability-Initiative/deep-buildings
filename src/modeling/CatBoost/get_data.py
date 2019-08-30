@@ -146,17 +146,17 @@ def generate_data(df, freq: str, scenario=None, regr_vars = None,
       X=X.dropna()
       y=X['y_data']
       
-      if corr_plot: 
-          import matplotlib.pyplot as plt
-          import seaborn as sns
-          plt.figure()
-          sns.heatmap(X.corr())
-          X = X.dropna()
-          y=X['y_data']
-          # Print correlation values to help hint at what regression parameters to choose
-          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
-          print(CorrMatrix.sort_values(by=['y_data']))
-    
+#      if corr_plot: 
+#          import matplotlib.pyplot as plt
+#          import seaborn as sns
+#          plt.figure()
+#          sns.heatmap(X.corr())
+#          X = X.dropna()
+#          y=X['y_data']
+#          # Print correlation values to help hint at what regression parameters to choose
+#          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
+#          print(CorrMatrix.sort_values(by=['y_data']))
+#    
       X = X.drop(columns=['y_data'], axis=1)   
 
     if freq == 'H':
@@ -197,19 +197,19 @@ def generate_data(df, freq: str, scenario=None, regr_vars = None,
 #      new_regressors = ['is_weekend', 'rolling_std_mean_3', 'future_exceedence','hist_indoor', 'temp_gradient']
 
       X['y_data']=y
-      if corr_plot: 
-          import matplotlib.pyplot as plt
-          import seaborn as sns
-          plt.figure()
-          sns.heatmap(X.corr())
-          X = X.dropna()
-          y=X['y_data']
+#      if corr_plot: 
+#          import matplotlib.pyplot as plt
+#          import seaborn as sns
+#          plt.figure()
+#          sns.heatmap(X.corr())
+#          X = X.dropna()
+#          y=X['y_data']
         
-          # Print correlation values to help hint at what regression parameters
-          # to choose
-          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
-          print(CorrMatrix.sort_values(by=['y_data']))
-        
+#          # Print correlation values to help hint at what regression parameters
+#          # to choose
+#          CorrMatrix=pd.DataFrame(X.corr()['y_data'])
+#          print(CorrMatrix.sort_values(by=['y_data']))
+#        
       X = X.drop(columns=['y_data'], axis=1)
     
       X=X.iloc[2:]

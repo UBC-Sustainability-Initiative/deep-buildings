@@ -24,19 +24,17 @@ from data.preprocess import read_processed_data
 
 @click.option('--look_ahead', default = [0,0,0,0,0,0,0], show_default = True)
 
-@click.option('--corr_plot', default = False, show_default = True)
 
 @click.option('--test_year', default = 2017, show_default=True)
 
 def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
-         look_back, look_ahead, corr_plot, test_year):
+         look_back, look_ahead, test_year):
     
     df = read_processed_data(input_file)
     
     X, y= generate_data(df, freq='D', scenario=scenario, regr_vars = regr_vars,
                         multiplier = multiplier, baseline= baseline, 
-                        look_back = look_back, look_ahead = look_ahead, 
-                        corr_plot= corr_plot)
+                        look_back = look_back, look_ahead = look_ahead)
     
     trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
     print("Generated data for CatBoost")
