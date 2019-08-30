@@ -2,7 +2,7 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 
-def generate_data(X, y, freq: str, regr_vars = None, hist_keys = None, 
+def generate_data(df, freq: str, regr_vars = None, hist_keys = None, 
                   hist_steps = None ):
     '''
     
@@ -11,6 +11,9 @@ def generate_data(X, y, freq: str, regr_vars = None, hist_keys = None,
 
     
     '''
+    
+    y = df['target_data']
+    X = df.drop(columns=['target_data'])
     
     if regr_vars:
         regression_variables = regr_vars
