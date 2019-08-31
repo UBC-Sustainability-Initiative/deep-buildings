@@ -23,7 +23,6 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
     else: 
         regression_variables = list(X.columns)
     
-    print(regression_variables)
 
     if multiplier: 
         multiplier = multiplier
@@ -45,7 +44,7 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
         look_ahead = look_ahead
     else: 
         look_ahead = list(np.zeros(len(regression_variables),dtype=int))
-    print(look_back)
+
     if freq == 'D':
     
       # Synchronize X and y data by ensuring consistency of timestamps and all
