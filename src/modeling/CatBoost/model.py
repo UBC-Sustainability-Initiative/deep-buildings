@@ -13,8 +13,8 @@ class CatBoostModel(cb.CatBoostClassifier):
         self.set_params(**config)
         
     def train(self, trainX, trainY):
-        X = read_processed_data(trainX)
-        y = read_processed_data(trainY)
+        X = trainX
+        y = trainY
         self.fit(X, y)
         
     def predict(self, X):
