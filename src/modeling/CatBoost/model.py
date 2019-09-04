@@ -1,6 +1,8 @@
 import pickle 
 import sys 
 import catboost as cb
+import pandas as pd
+import numpy as np
 sys.path.append('src')
 from data.preprocess import read_processed_data
 
@@ -17,6 +19,21 @@ class CatBoostModel(cb.CatBoostClassifier):
         y = trainY
         self.fit(X, y)
         
+    def get_predictions(self, X, thres = 0.80, 
+                        save_to = '../data/output/CatBoost/preds.pkl'):
+        preds_class = self.predict(X)
+        preds_proba = self.predict_proba(X)  
+        preds_df = pd.DataFrame(data={'class':preds_class,
+                                      'proba':preds_proba[:,1]}, 
+                                      index = X.index)
+        preds_df['80_confident'] = np.where(preds_df['proba']>=thres, 1, 0)
+
+        if save_to: 
+            with open(save_to, 'wb') as outfile:
+                pickle.dump(preds_df, outfile, pickle.HIGHEST_PROTOCOL)
+                
+        return preds_df
+    
     def save(self, fname):
         with open(fname, 'wb') as outfile:
             pickle.dump(self, outfile, pickle.HIGHEST_PROTOCOL)
