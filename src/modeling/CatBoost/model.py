@@ -19,8 +19,7 @@ class CatBoostModel(cb.CatBoostClassifier):
         
 #    def predict(self, X):
 #        y_pred = self.predict(X)
-
-        return y_pred
+#        return y_pred
 
     def save(self, fname):
         with open(fname, 'wb') as outfile:
