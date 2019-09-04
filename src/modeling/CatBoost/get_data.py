@@ -219,8 +219,8 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
       
     return X,y
         
-def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None
-                     save_data = True, pname = None):
+def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None,
+                     save_data = False, pname = None):
     
     '''
     Establish train/test split | Default value should be 80% for train, 20% for test, 
