@@ -17,8 +17,8 @@ class CatBoostModel(cb.CatBoostClassifier):
         y = trainY
         self.fit(X, y)
         
-    def predict(self, X):
-        y_pred = self.predict(X)
+#    def predict(self, X):
+#        y_pred = self.predict(X)
 
         return y_pred
 
