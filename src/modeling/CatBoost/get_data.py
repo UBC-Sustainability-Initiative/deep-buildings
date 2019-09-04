@@ -219,7 +219,8 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
       
     return X,y
         
-def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None):
+def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None
+                     save_data = True, pname = None):
     
     '''
     Establish train/test split | Default value should be 80% for train, 20% for test, 
@@ -283,8 +284,15 @@ def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None):
     print('Test Start Date:  ', testX.index[0].date().strftime('%Y-%m-%d %X'))
     print('Test Start Date:  ', testX.index[-1].date().strftime('%Y-%m-%d %X'))
     
-    def save_data(trainX, trainY, testX, testY, 
-              pname = '../../../data/processed/CatBoost/'):
+    if save_data:
+        
+        if pname: 
+            
+            pname = pname
+            
+        else: 
+            pname = '../../../data/processed/CatBoost/'
+            
         trainX['trainY'] = trainY
         testX['testY'] = testY
         train = trainX.copy()
