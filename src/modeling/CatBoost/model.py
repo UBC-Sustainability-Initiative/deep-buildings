@@ -17,10 +17,6 @@ class CatBoostModel(cb.CatBoostClassifier):
         y = trainY
         self.fit(X, y)
         
-#    def predict(self, X):
-#        y_pred = self.predict(X)
-#        return y_pred
-
     def save(self, fname):
         with open(fname, 'wb') as outfile:
             pickle.dump(self, outfile, pickle.HIGHEST_PROTOCOL)
