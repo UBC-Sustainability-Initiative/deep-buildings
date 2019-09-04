@@ -283,15 +283,16 @@ def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None):
     print('Test Start Date:  ', testX.index[0].date().strftime('%Y-%m-%d %X'))
     print('Test Start Date:  ', testX.index[-1].date().strftime('%Y-%m-%d %X'))
     
+    def save_data(trainX, trainY, testX, testY, 
+              pname = '../../../data/processed/CatBoost/'):
+        trainX['trainY'] = trainY
+        testX['testY'] = testY
+        train = trainX.copy()
+        test = testX.copy()
+        with open(pname+'train.pkl', 'wb') as outfile:
+                pickle.dump(train, outfile, pickle.HIGHEST_PROTOCOL)
+        with open(pname+'test.pkl', 'wb') as outfile:
+                pickle.dump(test, outfile, pickle.HIGHEST_PROTOCOL)
+            
     return trainX, trainY, testX, testY
 
-def save_data(trainX, trainY, testX, testY, 
-              pname = '../../../data/processed/CatBoost/'):
-    trainX['trainY'] = trainY
-    testX['testY'] = testY
-    train = trainX.copy()
-    test = testX.copy()
-    with open(pname+'train.pkl', 'wb') as outfile:
-            pickle.dump(train, outfile, pickle.HIGHEST_PROTOCOL)
-    with open(pname+'test.pkl', 'wb') as outfile:
-            pickle.dump(test, outfile, pickle.HIGHEST_PROTOCOL)
