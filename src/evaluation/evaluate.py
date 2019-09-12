@@ -228,7 +228,7 @@ def main(model, cutoff):
                              testData = testY)
     mu, la, xmin, xmax, = plot_cumulative_distr(preds_df)
     plot_prob_density(mu, la, predsData = preds_class, testData = testY,
-                      xmin, xmax)
+                      xmin=xmin, xmax=xmax)
     boxplot(preds_df, testData = testY)
 
 if __name__ == '__main__':
