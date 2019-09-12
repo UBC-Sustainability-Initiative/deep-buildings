@@ -41,7 +41,7 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
     model = CatBoostModel()
     model.train(trainX, trainY)
     model.save(output_file)
-    model.make_predictions(testX, save_to = '../data/output/CatBoost/preds.pkl')
+    model.make_predictions(testX, save_to = 'data/output/CatBoost/preds.pkl')
 
 if __name__ == '__main__':
     main()
