@@ -8,19 +8,18 @@ from scipy import optimize
 import sys
 import click
 sys.path.append('src')
-from IPython import get_ipython
-get_ipython().run_line_magic('matplotlib', 'inline')
 
-def load_predictions(model = 'CatBoost', 
+
+def load_predictions(model, 
                      fname = 'data/output/',
-                     thres = 0.8):
+                     thres = cutoff):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
         df = pickle.load(infile)
     df['with_thres'] = np.where(df['proba']>=thres, 1, 0)
     return df
 
-def load_data(model = 'CatBoost',
+def load_data(model,
               fname = 'data/processed/'):
 
     with open(fname+model+"/train.pkl", 'rb') as infile:
@@ -214,8 +213,8 @@ def boxplot(preds_df, testData):
 def main(model, cutoff):
     model = 'CatBoost' 
     cutoff = 0.8
-    trainX, trainY, testX, testY = load_data()
-    preds_df = load_predictions(thres=cutoff)
+    trainX, trainY, testX, testY = load_data(model)
+    preds_df = load_predictions(model, thres=cutoff)
     preds_class = preds_df['with_thres']
     
     # Resample to daily when using hourly training data 
