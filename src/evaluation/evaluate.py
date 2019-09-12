@@ -72,7 +72,7 @@ def plot_predicted_vs_actual(model, predsData, testData, fname=None):
     
     plt.savefig(fname,dpi=300)
 
-    plt.show()
+    plt.show();
 
 
 def plot_cumulative_distr(preds_df):
@@ -115,7 +115,7 @@ def plot_cumulative_distr(preds_df):
     
     labels = ax.get_xticklabels() + ax.get_yticklabels()
     [label.set_fontname(font) for label in labels]
-    plt.show()
+    plt.show();
     
     return mu, la
     
@@ -162,7 +162,7 @@ def plot_prob_density(mu, la, predsData, testData):
     
     labels = axes.get_xticklabels() + axes.get_yticklabels()
     [label.set_fontname(font) for label in labels]
-    fig.show()
+    fig.show();
     
     
     print('**********************************')
@@ -172,8 +172,6 @@ def plot_prob_density(mu, la, predsData, testData):
     print('Actual number of days exceeding thermal comfort criteria: ' + str(int(testData.sum())))
     print('**********************************')
     from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
-    print(predsData, testData)
-
     acc_score = accuracy_score(predsData, testData)
     prec_score = precision_score(predsData, testData)
     rec_score = recall_score(predsData, testData)
@@ -211,8 +209,9 @@ def boxplot(preds_df, testData):
 #@click.command()
 #@click.option('--model', default = 'CatBoost', show_default=True)
 #@click.option('--cutoff', default = 0.8, show_default=True)
-def main(model='CatBoost', cutoff = 0.8):
-    
+def main(model, cutoff):
+    model = 'CatBoost' 
+    cutoff = 0.8
     trainX, trainY, testX, testY = load_data()
     preds_df = load_predictions(thres=cutoff)
     preds_class = preds_df['with_thres']
