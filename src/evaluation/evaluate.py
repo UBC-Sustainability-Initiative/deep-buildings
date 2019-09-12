@@ -177,7 +177,7 @@ def plot_prob_density(mu, la, predsData, testData):
     prec_score = precision_score(predsData, testData)
     rec_score = recall_score(predsData, testData)
     roc_auc_score = roc_auc_score(predsData, testData)
-    
+    print(predsData, testData)
     print("Test Accuracy score: ", acc_score)
     print("Test Precision score: ", prec_score)
     print("Test Recall score: ", rec_score)
@@ -208,10 +208,10 @@ def boxplot(preds_df, testData):
     
     return vals.boxplot()
 
-@click.command()
-@click.option('--model', default = 'CatBoost', show_default=True)
-@click.option('--cutoff', default = 0.8, show_default=True)
-def main(model, cutoff):
+#@click.command()
+#@click.option('--model', default = 'CatBoost', show_default=True)
+#@click.option('--cutoff', default = 0.8, show_default=True)
+def main(model='CatBoost', cutoff = 0.8):
     
     trainX, trainY, testX, testY = load_data()
     preds_df = load_predictions(thres=cutoff)
