@@ -291,15 +291,15 @@ def split_train_test(X, y, pct_train=0.8, month_range=None, test_year=None,
             pname = pname
             
         else: 
-            pname = '../../../data/processed/CatBoost/'
-            
-        trainX['trainY'] = trainY
-        testX['testY'] = testY
+            pname = '.../data/processed/CatBoost/'
+        
         train = trainX.copy()
         test = testX.copy()
+        train['trainY'] = trainY
+        test['testY'] = testY
         with open(pname+'train.pkl', 'wb') as outfile:
                 pickle.dump(train, outfile, pickle.HIGHEST_PROTOCOL)
-        with open(pname+'test.pkl', 'wb') as outfile:
+        with open(pname+'testXs.pkl', 'wb') as outfile:
                 pickle.dump(test, outfile, pickle.HIGHEST_PROTOCOL)
             
     return trainX, trainY, testX, testY
