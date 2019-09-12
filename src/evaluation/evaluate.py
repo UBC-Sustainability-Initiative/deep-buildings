@@ -8,8 +8,7 @@ from scipy import optimize
 import sys
 import click
 sys.path.append('src')
-from IPython import get_ipython
-get_ipython().run_line_magic('matplotlib', 'inline')
+'exec(%matplotlib inline)'
 
 def load_predictions(model = 'CatBoost', 
                      fname = 'data/output/',
