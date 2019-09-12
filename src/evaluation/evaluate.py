@@ -109,7 +109,9 @@ def plot_cumulative_distr(preds_df):
 
     mu,la = scipy.optimize.curve_fit(f2,np.array(bins),np.array(xvals))[0]
     
-    x2=np.linspace(min(bins),max(bins),300)
+    xmin = min(bins)
+    xmax = max(bins)
+    x2=np.linspace(xmin, xmax,300)
     ax.plot(x2,f2(np.array(x2),mu,la))
     ax.set_ylabel('ECDF',fontname=font,fontweight="heavy",fontsize = 12)
     ax.set_xlabel('x',fontname=font,fontsize = 12)
@@ -118,7 +120,7 @@ def plot_cumulative_distr(preds_df):
     [label.set_fontname(font) for label in labels]
     plt.show()
     
-    return mu, la, min(bins),max(bins)
+    return mu, la, xmin, xmax
     
 
 
@@ -211,8 +213,6 @@ def boxplot(preds_df, testData):
 @click.option('--model', default = 'CatBoost', show_default=True)
 @click.option('--cutoff', default = 0.8, show_default=True)
 def main(model, cutoff):
-    model = 'CatBoost' 
-    cutoff = 0.8
     trainX, trainY, testX, testY = load_data(model)
     preds_df = load_predictions(model, thres=cutoff)
     preds_class = preds_df['with_thres']
