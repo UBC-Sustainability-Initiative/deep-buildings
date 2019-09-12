@@ -8,6 +8,8 @@ from scipy import optimize
 import sys
 import click
 sys.path.append('src')
+%matplotlib inline
+
 
 def load_predictions(model = 'CatBoost', 
                      fname = 'data/output/',
@@ -72,7 +74,7 @@ def plot_predicted_vs_actual(model, predsData, testData, fname=None):
     
     plt.savefig(fname,dpi=300)
 
-    plt.show();
+    plt.show()
 
 
 def plot_cumulative_distr(preds_df):
@@ -115,7 +117,7 @@ def plot_cumulative_distr(preds_df):
     
     labels = ax.get_xticklabels() + ax.get_yticklabels()
     [label.set_fontname(font) for label in labels]
-    plt.show();
+    plt.show()
     
     return mu, la
     
@@ -162,7 +164,7 @@ def plot_prob_density(mu, la, predsData, testData):
     
     labels = axes.get_xticklabels() + axes.get_yticklabels()
     [label.set_fontname(font) for label in labels]
-    fig.show();
+    fig.show()  
     
     
     print('**********************************')
