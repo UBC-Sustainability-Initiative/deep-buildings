@@ -76,7 +76,7 @@ def plot_predicted_vs_actual(model, predsData, testData, fname=None):
     plt.show()
 
 
-def plot_cumulative_distr(preds_df):
+def plot_cumulative_distr(preds_df, s_quantile):
     '''
     Takes the probabilities of a day being classified as hot, and calculates 
     the empirical cumulative distribution of probabilities.
@@ -86,7 +86,7 @@ def plot_cumulative_distr(preds_df):
     font = "Times New Roman"    
 
     # quantiles
-    bins = np.linspace(0.5,0.99,100)
+    bins = np.linspace(s_quantile, 0.99,100)
     xvals = []
     for i in range(len(bins)):
       min_lim = bins[i]
@@ -120,7 +120,7 @@ def plot_cumulative_distr(preds_df):
     [label.set_fontname(font) for label in labels]
     plt.show()
     
-    return mu, la, xmin, xmax
+    return mu, la, xmin, xmax;
     
 
 
@@ -212,7 +212,8 @@ def boxplot(preds_df, testData):
 @click.command()
 @click.option('--model', default = 'CatBoost', show_default=True)
 @click.option('--cutoff', default = 0.8, show_default=True)
-def main(model, cutoff):
+@click.option('--s_quantile', default = 0.5, show_default=True)
+def main(model, cutoff, s_quantile):
     trainX, trainY, testX, testY = load_data(model)
     preds_df = load_predictions(model, thres=cutoff)
     preds_class = preds_df['with_thres']
@@ -226,7 +227,7 @@ def main(model, cutoff):
     
     plot_predicted_vs_actual(model = model, predsData = preds_class, 
                              testData = testY)
-    mu, la, xmin, xmax, = plot_cumulative_distr(preds_df)
+    mu, la, xmin, xmax = plot_cumulative_distr(preds_df, s_quantile)
     plot_prob_density(mu, la, predsData = preds_class, testData = testY,
                       xmin=xmin, xmax=xmax)
     boxplot(preds_df, testData = testY)
