@@ -172,12 +172,12 @@ def plot_prob_density(mu, la, predsData, testData):
     print('Actual number of days exceeding thermal comfort criteria: ' + str(int(testData.sum())))
     print('**********************************')
     from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
-    
+    print(predsData, testData)
+
     acc_score = accuracy_score(predsData, testData)
     prec_score = precision_score(predsData, testData)
     rec_score = recall_score(predsData, testData)
     roc_auc_score = roc_auc_score(predsData, testData)
-    print(predsData, testData)
     print("Test Accuracy score: ", acc_score)
     print("Test Precision score: ", prec_score)
     print("Test Recall score: ", rec_score)
