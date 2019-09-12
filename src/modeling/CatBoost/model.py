@@ -19,14 +19,12 @@ class CatBoostModel(cb.CatBoostClassifier):
         y = trainY
         self.fit(X, y)
         
-    def get_predictions(self, X, thres = 0.80, 
-                        save_to = '../data/output/CatBoost/preds.pkl'):
+    def make_predictions(self, X, save_to):
         preds_class = self.predict(X)
         preds_proba = self.predict_proba(X)  
         preds_df = pd.DataFrame(data={'class':preds_class,
                                       'proba':preds_proba[:,1]}, 
                                       index = X.index)
-        preds_df['80_confident'] = np.where(preds_df['proba']>=thres, 1, 0)
 
         if save_to: 
             with open(save_to, 'wb') as outfile:
