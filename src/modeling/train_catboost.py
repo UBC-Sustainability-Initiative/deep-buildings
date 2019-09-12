@@ -22,7 +22,6 @@ from data.preprocess import read_processed_data
 
 @click.option('--look_ahead', default = [0,0,0,0,0,0,0], show_default = True)
 
-
 @click.option('--test_year', default = 2017, show_default=True)
 
 def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
@@ -34,7 +33,9 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
                         multiplier = multiplier, baseline= baseline, 
                         look_back = look_back, look_ahead = look_ahead)
     
-    trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year)
+    trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year,
+                                                    save_data = True,
+                                                    pname = '../data/processed/CatBoost/')
     print("Generated data for CatBoost")
     print('Training model...')
     model = CatBoostModel()
