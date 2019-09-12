@@ -118,11 +118,11 @@ def plot_cumulative_distr(preds_df):
     [label.set_fontname(font) for label in labels]
     plt.show()
     
-    return mu, la
+    return mu, la, min(bins),max(bins)
     
 
 
-def plot_prob_density(mu, la, predsData, testData):
+def plot_prob_density(mu, la, predsData, testData, xmin, xmax):
     from scipy.stats import lognorm
 
     fig, axes = plt.subplots(1,1, figsize=(5,4), sharey=True, dpi=120)
@@ -130,7 +130,7 @@ def plot_prob_density(mu, la, predsData, testData):
 
     f3 = lambda x,mu,la: (1/x*la*(2*math.pi)**0.5)*np.exp(-((np.log(x)-mu)**2)/(2*la**2))
 
-    x2=np.linspace(0,10,300)
+    x2=np.linspace(0,xmax,300)
 
     axes.plot(x2,f3(x2,mu,la))
     ymin, ymax = axes.get_ylim()
@@ -159,7 +159,7 @@ def plot_prob_density(mu, la, predsData, testData):
     axes.set_xlabel('Number of days exceeding threshold',fontname=font,fontweight="heavy",fontsize = 12)
     axes.set_ylabel('Probability density function (-)',fontname=font,fontweight="heavy",fontsize = 12)
     axes.set_ylim(0,ymax)
-    axes.set_xlim(0,10)
+    axes.set_xlim(0,xmax)
     
     labels = axes.get_xticklabels() + axes.get_yticklabels()
     [label.set_fontname(font) for label in labels]
@@ -226,8 +226,9 @@ def main(model, cutoff):
     
     plot_predicted_vs_actual(model = model, predsData = preds_class, 
                              testData = testY)
-    mu, la = plot_cumulative_distr(preds_df)
-    plot_prob_density(mu, la, predsData = preds_class, testData = testY)
+    mu, la xmin, xmax, = plot_cumulative_distr(preds_df)
+    plot_prob_density(mu, la, predsData = preds_class, testData = testY
+                      xmin, xmax)
     boxplot(preds_df, testData = testY)
 
 if __name__ == '__main__':
