@@ -4,66 +4,240 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-import seaborn as sns
-import seaborn
+import sys
 sys.path.append('src')
 
 def load_predictions(model = 'CatBoost', 
-                     fname = '../../data/output/'):
+                     fname = '../../data/output/',
+                     thres = 0.8):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
-        return pickle.load(infile)
+        df = pickle.load(infile)
+    df['with_thres'] = np.where(df['proba']>=thres, 1, 0)
+    return df
 
 def load_data(model = 'CatBoost',
-              fname = '../../data/processed/CatBoost/'):
+              fname = '../../data/processed/'):
 
     with open(fname+model+"/train.pkl", 'rb') as infile:
         train = pickle.load(infile)   
     with open(fname+model+"/test.pkl", 'rb') as infile:
         test = pickle.load(infile) 
     
+    trainY = train['trainY']
+    train = train.drop('trainY', axis=1)
+    trainX = train 
+    testY = test['testY']
+    test = test.drop('testY', axis=1)
+    testX = test
+    return trainX, trainY, testX, testY
+    
+trainX, trainY, testX, testY = load_data()
+preds_df = load_predictions(thres=0.80)
+preds_class = preds_df['with_thres']
+
+# Resample to daily when using hourly training data 
+preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
+testY = testY.resample('D').max()
+preds_df = preds_df.resample('D').mean()
+
+preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
+testY = testY.resample('D').max()
+
+
+def plot_predicted_vs_actual(model = "CatBoost", fname=None):
+    import matplotlib.dates as mdates
+    import matplotlib.cbook as cbook
+    import matplotlib.gridspec as gridspec
+
+    fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10,4), sharey=True, dpi=120)
+    font = "Times New Roman"    
+    #set ticks every week
+    ax1.xaxis.set_major_locator(mdates.WeekdayLocator())
+    #set major ticks format
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    
+    #set ticks every week
+    ax2.xaxis.set_major_locator(mdates.WeekdayLocator())
+    #set major ticks format
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    ax2.yaxis.major.formatter._useMathText = True
+
+    ax1.plot(preds_class,'b.')
+    ax1.set_title('Predicted Hot Days',fontname=font,fontweight="heavy")
+    ax1.set_ylabel('Probability',fontname=font, fontsize = 12)
+
+    ax2.plot(testY,'r.')
+    ax2.set_title('Actual Hot Days',fontname=font,fontweight="bold")
+    plt.subplots_adjust(wspace=0.04, hspace=0)
+
+    fig.autofmt_xdate()
+    fig.patch.set_facecolor('white')
+    if fname:
+        fname = fname 
+    else: 
+        fname = '../../figures/predicted_vs_actual_'+model+'thres80'+'.pdf'
+    
+    for ax in [ax1,ax2]:
+        labels = ax.get_xticklabels() + ax.get_yticklabels()
+        [label.set_fontname(font) for label in labels]
+    
+    plt.savefig(fname,dpi=300)
+
+    plt.show()
+
+
+plot_predicted_vs_actual(model = "CatBoost")
+
+
+def plot_cumulative_distr(prob_distr=None):
+    '''
+    Takes the probabilities of a day being classified as hot, and calculates 
+    the empirical cumulative distribution of probabilities.
+    
+    '''
+    fig, ax = plt.subplots(1,1, figsize=(5,4), sharey=True, dpi=120)
+    font = "Times New Roman"    
+
+    # quantiles
+    bins = np.linspace(0.5,0.99,100)
+    xvals = []
+    for i in range(len(bins)):
+      min_lim = bins[i]
+      xvals.append(preds_df[(preds_df['proba']>=min_lim)].count().values.item(0))
+      #print(min_lim,preds_df[(preds_df['proba']>=min_lim)].count().values.item(0) )
+      
+    #plt.plot(xvals,1-np.array(bins),'b.')
+    
+    def ecdf(data):
+        """ Compute ECDF """
+        x = np.sort(data)
+        n = x.size
+        y = np.arange(1, n+1)/n
+        return(x,y)
+    
+    bins, xvals = ecdf(xvals)
+
+
+    ax.plot(bins, xvals,'b.')
+    fig.show()
     
     
+    # Cumulative distribution function 
+    f2 = lambda x,mu,la: 0.5+0.5*scipy.special.erf((np.log(x)-mu)/((2**0.5)*la))
+    #f2 = lambda x,mu,la: (1/x*la*(2*math.pi)**0.5)*np.exp(-((np.log(x)-mu)**2)/(2*la**2))
+
+    #f2 = lambda x,mu,la: 0.5+0.5*scipy.special.erf((x-mu)/(np.sqrt(2)*la))
+
+    mu,la = scipy.optimize.curve_fit(f2,np.array(bins),np.array(xvals))[0]
+    
+    x2=np.linspace(min(bins),max(bins),300)
+    ax.plot(x2,f2(np.array(x2),mu,la))
+    ax.set_ylabel('ECDF',fontname=font,fontweight="heavy",fontsize = 12)
+    ax.set_xlabel('x',fontname=font,fontsize = 12)
+    #ax.set_xlim([45,0])
+    
+    labels = ax.get_xticklabels() + ax.get_yticklabels()
+    [label.set_fontname(font) for label in labels]
+    plt.show()
+    return mu, la
+    
+mu, la = plot_cumulative_distr(prob_distr=preds_df)
+
+
+def plot_prob_density(mu, la):
+    from scipy.stats import lognorm
+
+    fig, axes = plt.subplots(1,1, figsize=(5,4), sharey=True, dpi=120)
+    font = "Times New Roman"    
+
+    f3 = lambda x,mu,la: (1/x*la*(2*math.pi)**0.5)*np.exp(-((np.log(x)-mu)**2)/(2*la**2))
+
+    x2=np.linspace(0,10,300)
+
+    axes.plot(x2,f3(x2,mu,la))
+    ymin, ymax = axes.get_ylim()
+    
+    x_bounds = lognorm.interval(alpha=0.95, s=la, scale=np.exp(mu))
+    x_bounds_std = lognorm.interval(alpha=0.68,s=la,scale=np.exp(mu))
+    
+    axes.axvline(x=testY.sum() ,color='red',linestyle=':')
+    ymaxes= f3(np.asarray(x_bounds),mu,la)/ymax+0.01
+    
+    axes.axvline(x=x_bounds[0] ,color='blue',alpha=0.3,linestyle=':')
+    axes.axvline(x=x_bounds[1] ,color='blue',alpha=0.3,linestyle=':')
+    
+    xfill =  np.linspace(x_bounds[0],x_bounds[1],100)
+    xfill_std =  np.linspace(x_bounds_std[0],x_bounds_std[1],100)
+    
+    axes.fill_between(xfill,f3(xfill,mu,la),alpha=0.1,color='blue')
+    axes.fill_between(xfill_std,f3(xfill_std,mu,la),alpha=0.1,color='blue')
+    
+    #axes.fill_between(xfill,)
+    axes.text(x=testY.sum()+1,y=.03*ymax,s='Actual: '+str(int(testY.sum())),color='red')
+    #axes.text(x=x_bounds[1]+1,y=ymax*.9,s='Upper 95%:',color='blue')
+    #axes.text(x=x_bounds[1]+1,y=ymax*.82,s=str(round(x_bounds[1],1)),color='blue')
+    #axes.text(x=x_bounds[0]-10,y=ymax*.9,s='Lower 95%:',color='blue')
+    #axes.text(x=x_bounds[0]-10,y=ymax*.82,s=str(round(x_bounds[0],1)),color='blue')
+    axes.set_xlabel('Number of days exceeding threshold',fontname=font,fontweight="heavy",fontsize = 12)
+    axes.set_ylabel('Probability density function (-)',fontname=font,fontweight="heavy",fontsize = 12)
+    axes.set_ylim(0,ymax)
+    axes.set_xlim(0,10)
+    
+    labels = axes.get_xticklabels() + axes.get_yticklabels()
+    [label.set_fontname(font) for label in labels]
+    fig.show()
     
     
-preds_df = load_predictions()
-preds_class = preds_df['80_confident']
+    print('**********************************')
+    print('Expected number of days exceeding thermal comfort criteria: '+str(round(lognorm.mean(s=la,scale=np.exp(mu)),1))  + ' +/- ' + str(round(lognorm.std(s=la,scale=np.exp(mu)),1)))
+    print('Most likely number of days exceeding thermal comfort criteria: '+str(round(np.exp(mu - la**2)))  + ' +/- ' + str(round(lognorm.std(s=la,scale=np.exp(mu)),1)))
+    print('Predicted number of days exceeding thermal comfort criteria (deterministic): '+str(int(np.sum(preds_class))))
+    print('Actual number of days exceeding thermal comfort criteria: ' + str(int(testY.sum())))
+    print('**********************************')
+    from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
+    
+    acc_score = accuracy_score(preds_class, testY)
+    prec_score = precision_score(preds_class, testY)
+    rec_score = recall_score(preds_class, testY)
+    roc_auc_score = roc_auc_score(preds_class, testY)
+    
+    print("Test Accuracy score: ", acc_score)
+    print("Test Precision score: ", prec_score)
+    print("Test Recall score: ", rec_score)
+    print("Test ROC AUC score: ", roc_auc_score)
 
-## Resample to daily when using hourly training data 
-#preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
-#testY = testY.resample('D').max()
-#preds_df = preds_df.resample('D').mean()
-#
-#preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
-#testY = testY.resample('D').max()
+plot_prob_density(mu, la)
 
-plt.plot(preds_class,'b.')
-plt.title('Predicted Hot Days')
-plt.show()
-plt.plot(testY.values,'r.')
-plt.title('Actual Hot Days')
-plt.show()
 
-bins = [0,0.02,0.04,0.06,0.08,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95,0.99]
-xvals = []
-lastVal = 0
-for i in range(len(bins)):
-  min_lim = bins[i]
-  xvals.append(preds_df[(preds_df['proba']>min_lim)].count().values.item(0))
+def boxplot(prob_distr=None):
+        # quantiles
+    bins = np.linspace(0.5,0.99,100)
+    xvals = []
+    for i in range(len(bins)):
+      min_lim = bins[i]
+      xvals.append(preds_df[(preds_df['proba']>=min_lim)].count().values.item(0))
+      #print(min_lim,preds_df[(preds_df['proba']>=min_lim)].count().values.item(0) )
+      
+    #plt.plot(xvals,1-np.array(bins),'b.')
+    
+    def ecdf(data):
+        """ Compute ECDF """
+        x = np.sort(data)
+        n = x.size
+        y = np.arange(1, n+1)/n
+        return(x,y)
+    
+    bins, xvals = ecdf(xvals)
+    
+    fig, axes = plt.subplots(1,1, figsize=(5,4), sharey=True, dpi=120)
+    axes.axhline(y=testY.sum() ,color='blue',linestyle=':')
+    vals = pd.DataFrame(data = bins)
+    
+    return vals.boxplot()
+    
 
-plt.plot(xvals,1-np.array(bins),'b.')
+bp = boxplot(preds_df)
 
-# Cumulative distribution function 
-#f = lambda x,la: ((2**0.5)/(la*(math.pi)**0.5))*np.exp(-(x**2)/(2*la**2))
-f2 = lambda x,mu,la: 0.5+0.5*scipy.special.erf((np.log(x)-mu)/((2**0.5)*la))
 
-mu,la = scipy.optimize.curve_fit(f2,np.array(xvals),1-np.array(bins))[0]
 
-x2=np.linspace(0,90,300)
-plt.plot(x2,f2(np.array(x2),mu,la))
-plt.show()
-
-#
-f3 = lambda x,mu,la: (0.5/x*la*(2*math.pi)**0.5)*np.exp(-((np.log(x)-mu)**2)/(2*la**2))
-
-from scipy.stats import lognorm
