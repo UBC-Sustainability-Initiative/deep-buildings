@@ -206,9 +206,9 @@ def boxplot(preds_df, testData):
     
     return vals.boxplot()
 
-#@click.command()
-#@click.option('--model', default = 'CatBoost', show_default=True)
-#@click.option('--cutoff', default = 0.8, show_default=True)
+@click.command()
+@click.option('--model', default = 'CatBoost', show_default=True)
+@click.option('--cutoff', default = 0.8, show_default=True)
 def main(model, cutoff):
     model = 'CatBoost' 
     cutoff = 0.8
