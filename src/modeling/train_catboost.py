@@ -35,7 +35,7 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
     
     trainX, trainY, testX, testY = split_train_test(X, y, test_year=test_year,
                                                     save_data = True,
-                                                    pname = '../data/processed/CatBoost/')
+                                                    pname = 'data/processed/CatBoost/')
     print("Generated data for CatBoost")
     print('Training model...')
     model = CatBoostModel()
