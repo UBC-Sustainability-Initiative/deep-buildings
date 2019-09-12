@@ -9,7 +9,7 @@ import click
 sys.path.append('src')
 
 def load_predictions(model = 'CatBoost', 
-                     fname = '../../data/output/',
+                     fname = '../data/output/',
                      thres = 0.8):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
@@ -18,7 +18,7 @@ def load_predictions(model = 'CatBoost',
     return df
 
 def load_data(model = 'CatBoost',
-              fname = '../../data/processed/'):
+              fname = '../data/processed/'):
 
     with open(fname+model+"/train.pkl", 'rb') as infile:
         train = pickle.load(infile)   
