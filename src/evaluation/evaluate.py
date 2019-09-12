@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 import sys
+import click
 sys.path.append('src')
 
 def load_predictions(model = 'CatBoost', 
@@ -32,23 +33,9 @@ def load_data(model = 'CatBoost',
     testX = test
     return trainX, trainY, testX, testY
     
-trainX, trainY, testX, testY = load_data()
-preds_df = load_predictions(thres=0.80)
-preds_class = preds_df['with_thres']
 
-# Resample to daily when using hourly training data 
-preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
-testY = testY.resample('D').max()
-preds_df = preds_df.resample('D').mean()
-
-preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
-testY = testY.resample('D').max()
-
-
-def plot_predicted_vs_actual(model = "CatBoost", fname=None):
+def plot_predicted_vs_actual(model, predsData, testData, fname=None):
     import matplotlib.dates as mdates
-    import matplotlib.cbook as cbook
-    import matplotlib.gridspec as gridspec
 
     fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10,4), sharey=True, dpi=120)
     font = "Times New Roman"    
@@ -63,11 +50,11 @@ def plot_predicted_vs_actual(model = "CatBoost", fname=None):
     ax2.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
     ax2.yaxis.major.formatter._useMathText = True
 
-    ax1.plot(preds_class,'b.')
+    ax1.plot(predsData,'b.')
     ax1.set_title('Predicted Hot Days',fontname=font,fontweight="heavy")
     ax1.set_ylabel('Probability',fontname=font, fontsize = 12)
 
-    ax2.plot(testY,'r.')
+    ax2.plot(testData,'r.')
     ax2.set_title('Actual Hot Days',fontname=font,fontweight="bold")
     plt.subplots_adjust(wspace=0.04, hspace=0)
 
@@ -87,10 +74,7 @@ def plot_predicted_vs_actual(model = "CatBoost", fname=None):
     plt.show()
 
 
-plot_predicted_vs_actual(model = "CatBoost")
-
-
-def plot_cumulative_distr(prob_distr=None):
+def plot_cumulative_distr(preds_df):
     '''
     Takes the probabilities of a day being classified as hot, and calculates 
     the empirical cumulative distribution of probabilities.
@@ -105,10 +89,7 @@ def plot_cumulative_distr(prob_distr=None):
     for i in range(len(bins)):
       min_lim = bins[i]
       xvals.append(preds_df[(preds_df['proba']>=min_lim)].count().values.item(0))
-      #print(min_lim,preds_df[(preds_df['proba']>=min_lim)].count().values.item(0) )
-      
-    #plt.plot(xvals,1-np.array(bins),'b.')
-    
+          
     def ecdf(data):
         """ Compute ECDF """
         x = np.sort(data)
@@ -118,16 +99,11 @@ def plot_cumulative_distr(prob_distr=None):
     
     bins, xvals = ecdf(xvals)
 
-
     ax.plot(bins, xvals,'b.')
     fig.show()
     
-    
     # Cumulative distribution function 
     f2 = lambda x,mu,la: 0.5+0.5*scipy.special.erf((np.log(x)-mu)/((2**0.5)*la))
-    #f2 = lambda x,mu,la: (1/x*la*(2*math.pi)**0.5)*np.exp(-((np.log(x)-mu)**2)/(2*la**2))
-
-    #f2 = lambda x,mu,la: 0.5+0.5*scipy.special.erf((x-mu)/(np.sqrt(2)*la))
 
     mu,la = scipy.optimize.curve_fit(f2,np.array(bins),np.array(xvals))[0]
     
@@ -135,17 +111,16 @@ def plot_cumulative_distr(prob_distr=None):
     ax.plot(x2,f2(np.array(x2),mu,la))
     ax.set_ylabel('ECDF',fontname=font,fontweight="heavy",fontsize = 12)
     ax.set_xlabel('x',fontname=font,fontsize = 12)
-    #ax.set_xlim([45,0])
     
     labels = ax.get_xticklabels() + ax.get_yticklabels()
     [label.set_fontname(font) for label in labels]
     plt.show()
+    
     return mu, la
     
-mu, la = plot_cumulative_distr(prob_distr=preds_df)
 
 
-def plot_prob_density(mu, la):
+def plot_prob_density(mu, la, predsData, testData):
     from scipy.stats import lognorm
 
     fig, axes = plt.subplots(1,1, figsize=(5,4), sharey=True, dpi=120)
@@ -161,7 +136,7 @@ def plot_prob_density(mu, la):
     x_bounds = lognorm.interval(alpha=0.95, s=la, scale=np.exp(mu))
     x_bounds_std = lognorm.interval(alpha=0.68,s=la,scale=np.exp(mu))
     
-    axes.axvline(x=testY.sum() ,color='red',linestyle=':')
+    axes.axvline(x=testData.sum() ,color='red',linestyle=':')
     ymaxes= f3(np.asarray(x_bounds),mu,la)/ymax+0.01
     
     axes.axvline(x=x_bounds[0] ,color='blue',alpha=0.3,linestyle=':')
@@ -174,7 +149,7 @@ def plot_prob_density(mu, la):
     axes.fill_between(xfill_std,f3(xfill_std,mu,la),alpha=0.1,color='blue')
     
     #axes.fill_between(xfill,)
-    axes.text(x=testY.sum()+1,y=.03*ymax,s='Actual: '+str(int(testY.sum())),color='red')
+    axes.text(x=testData.sum()+1,y=.03*ymax,s='Actual: '+str(int(testData.sum())),color='red')
     #axes.text(x=x_bounds[1]+1,y=ymax*.9,s='Upper 95%:',color='blue')
     #axes.text(x=x_bounds[1]+1,y=ymax*.82,s=str(round(x_bounds[1],1)),color='blue')
     #axes.text(x=x_bounds[0]-10,y=ymax*.9,s='Lower 95%:',color='blue')
@@ -192,35 +167,31 @@ def plot_prob_density(mu, la):
     print('**********************************')
     print('Expected number of days exceeding thermal comfort criteria: '+str(round(lognorm.mean(s=la,scale=np.exp(mu)),1))  + ' +/- ' + str(round(lognorm.std(s=la,scale=np.exp(mu)),1)))
     print('Most likely number of days exceeding thermal comfort criteria: '+str(round(np.exp(mu - la**2)))  + ' +/- ' + str(round(lognorm.std(s=la,scale=np.exp(mu)),1)))
-    print('Predicted number of days exceeding thermal comfort criteria (deterministic): '+str(int(np.sum(preds_class))))
-    print('Actual number of days exceeding thermal comfort criteria: ' + str(int(testY.sum())))
+    print('Predicted number of days exceeding thermal comfort criteria (deterministic): '+str(int(np.sum(predsData))))
+    print('Actual number of days exceeding thermal comfort criteria: ' + str(int(testData.sum())))
     print('**********************************')
     from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
     
-    acc_score = accuracy_score(preds_class, testY)
-    prec_score = precision_score(preds_class, testY)
-    rec_score = recall_score(preds_class, testY)
-    roc_auc_score = roc_auc_score(preds_class, testY)
+    acc_score = accuracy_score(predsData, testData)
+    prec_score = precision_score(predsData, testData)
+    rec_score = recall_score(predsData, testData)
+    roc_auc_score = roc_auc_score(predsData, testData)
     
     print("Test Accuracy score: ", acc_score)
     print("Test Precision score: ", prec_score)
     print("Test Recall score: ", rec_score)
     print("Test ROC AUC score: ", roc_auc_score)
 
-plot_prob_density(mu, la)
 
 
-def boxplot(prob_distr=None):
+def boxplot(preds_df, testData):
         # quantiles
     bins = np.linspace(0.5,0.99,100)
     xvals = []
     for i in range(len(bins)):
       min_lim = bins[i]
       xvals.append(preds_df[(preds_df['proba']>=min_lim)].count().values.item(0))
-      #print(min_lim,preds_df[(preds_df['proba']>=min_lim)].count().values.item(0) )
-      
-    #plt.plot(xvals,1-np.array(bins),'b.')
-    
+          
     def ecdf(data):
         """ Compute ECDF """
         x = np.sort(data)
@@ -231,13 +202,32 @@ def boxplot(prob_distr=None):
     bins, xvals = ecdf(xvals)
     
     fig, axes = plt.subplots(1,1, figsize=(5,4), sharey=True, dpi=120)
-    axes.axhline(y=testY.sum() ,color='blue',linestyle=':')
+    axes.axhline(y=testData.sum() ,color='blue',linestyle=':')
     vals = pd.DataFrame(data = bins)
     
     return vals.boxplot()
+
+@click.command()
+@click.option('--model', default = 'CatBoost', show_default=True)
+@click.option('--cutoff', default = 0.8, show_default=True)
+def main(model, cutoff):
     
+    trainX, trainY, testX, testY = load_data()
+    preds_df = load_predictions(thres=cutoff)
+    preds_class = preds_df['with_thres']
+    
+    # Resample to daily when using hourly training data 
+    preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
+    testY = testY.resample('D').max()
+    preds_df = preds_df.resample('D').mean()
+    preds_class = pd.Series(data = preds_class, index = testX.index).resample('D').max()
+    testY = testY.resample('D').max()
+    
+    plot_predicted_vs_actual(model = model, predsData = preds_class, 
+                             testData = testY)
+    mu, la = plot_cumulative_distr(preds_df)
+    plot_prob_density(mu, la, predsData = preds_class, testData = testY)
+    boxplot(preds_df, testData = testY)
 
-bp = boxplot(preds_df)
-
-
-
+if __name__ == '__main__':
+    main()
