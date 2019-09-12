@@ -9,7 +9,7 @@ import click
 sys.path.append('src')
 
 def load_predictions(model = 'CatBoost', 
-                     fname = '../data/output/',
+                     fname = 'data/output/',
                      thres = 0.8):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
@@ -18,7 +18,7 @@ def load_predictions(model = 'CatBoost',
     return df
 
 def load_data(model = 'CatBoost',
-              fname = '../data/processed/'):
+              fname = 'data/processed/'):
 
     with open(fname+model+"/train.pkl", 'rb') as infile:
         train = pickle.load(infile)   
@@ -63,7 +63,7 @@ def plot_predicted_vs_actual(model, predsData, testData, fname=None):
     if fname:
         fname = fname 
     else: 
-        fname = '../../figures/predicted_vs_actual_'+model+'thres80'+'.pdf'
+        fname = 'figures/predicted_vs_actual_'+model+'thres80'+'.pdf'
     
     for ax in [ax1,ax2]:
         labels = ax.get_xticklabels() + ax.get_yticklabels()
