@@ -4,6 +4,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
+from scipy import optimize
 import sys
 import click
 sys.path.append('src')
