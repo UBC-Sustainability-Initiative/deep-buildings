@@ -10,9 +10,8 @@ import click
 sys.path.append('src')
 
 
-def load_predictions(fname = 'data/output/',
-                     model,
-                     thres):
+def load_predictions(model, thres, 
+                     fname = 'data/output/'):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
         df = pickle.load(infile)
