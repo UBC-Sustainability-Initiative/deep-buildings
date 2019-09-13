@@ -12,7 +12,7 @@ sys.path.append('src')
 
 def load_predictions(model, 
                      fname = 'data/output/',
-                     thres = cutoff):
+                     thres):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
         df = pickle.load(infile)
