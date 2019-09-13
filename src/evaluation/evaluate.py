@@ -10,8 +10,8 @@ import click
 sys.path.append('src')
 
 
-def load_predictions(model, 
-                     fname = 'data/output/',
+def load_predictions(fname = 'data/output/',
+                     model,
                      thres):
     
     with open(fname+model+"/preds.pkl", 'rb') as infile:
@@ -215,7 +215,7 @@ def boxplot(preds_df, testData):
 @click.option('--s_quantile', default = 0.5, show_default=True)
 def main(model, cutoff, s_quantile):
     trainX, trainY, testX, testY = load_data(model)
-    preds_df = load_predictions(model, thres=cutoff)
+    preds_df = load_predictions(model= model, thres=cutoff)
     preds_class = preds_df['with_thres']
     
     # Resample to daily when using hourly training data 
