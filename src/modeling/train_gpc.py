@@ -44,7 +44,7 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
     x_data_dim = trainX.size(-1)
     model = GPClassificationModel(data_dim = x_data_dim)
     # Cuda the model and likelihood function
-    model = GPClassificationModel().cuda()
+    model = GPClassificationModel(data_dim = x_data_dim).cuda()
     likelihood = gpytorch.likelihoods.BernoulliLikelihood().cuda()
     # Find optimal model hyperparameters
     model.train()
