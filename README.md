@@ -1,5 +1,5 @@
 # Deep learning for forecasting the impact of climate change on a naturally-ventilated building
-Deep learning for building performance prediction. This repository employs several different machine learning methods (LSTM, gradient boosting, Gaussian process regression) to predict the future indoor thermal comfort performance of a naturally-ventilated test building under different future climate weather scenarios.
+This repository employs several different machine learning methods (LSTM, gradient boosting, Gaussian process regression) to predict the future indoor thermal comfort performance of a naturally-ventilated test building under different future climate weather scenarios.
 
 [Google CoLab notebook](https://colab.research.google.com/drive/1fEqECoHNKjTxuT4LC6wgYS1oVaH63IeE)
 
