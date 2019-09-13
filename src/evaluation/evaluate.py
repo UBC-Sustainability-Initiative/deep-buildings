@@ -21,17 +21,22 @@ def load_predictions(model, thres,
 def load_data(model,
               fname = 'data/processed/'):
 
-    with open(fname+model+"/train.pkl", 'rb') as infile:
-        train = pickle.load(infile)   
-    with open(fname+model+"/test.pkl", 'rb') as infile:
-        test = pickle.load(infile) 
+    with open(fname+model+"/trainX.pkl", 'rb') as infile:
+        trainX = pickle.load(infile)   
+    with open(fname+model+"/testX.pkl", 'rb') as infile:
+        testX = pickle.load(infile) 
+        
+    with open(fname+model+"/trainY.pkl", 'rb') as infile:
+        trainY = pickle.load(infile)   
+    with open(fname+model+"/testY.pkl", 'rb') as infile:
+        testX = pickle.load(infile) 
     
-    trainY = train['trainY']
-    train = train.drop('trainY', axis=1)
-    trainX = train 
-    testY = test['testY']
-    test = test.drop('testY', axis=1)
-    testX = test
+#    trainY = train['trainY']
+#    train = train.drop('trainY', axis=1)
+#    trainX = train 
+#    testY = test['testY']
+#    test = test.drop('testY', axis=1)
+#    testX = test
     return trainX, trainY, testX, testY
     
 
