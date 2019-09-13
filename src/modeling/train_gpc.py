@@ -11,6 +11,7 @@ from data.preprocess import read_processed_data
 @click.command()
 @click.argument('input_file', type=click.Path(exists=True, readable=True, dir_okay=False))
 @click.argument('output_file', type=click.Path(writable=True, dir_okay=False))
+@click.option('--iterations', default = 500, show_default=True)
 @click.option('--scenario', default = 2, show_default=True)
 @click.option('--regr_vars', default = ['solar_radiation','temp','wind_dir',
                                         'hum_ratio','windspeed','weekday',
@@ -26,7 +27,7 @@ from data.preprocess import read_processed_data
 
 @click.option('--test_year', default = 2017, show_default=True)
 
-def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
+def main(input_file, output_file, iterations, scenario, regr_vars, multiplier, baseline,
          look_back, look_ahead, test_year):
     
     df = read_processed_data(input_file)
@@ -55,7 +56,7 @@ def main(input_file, output_file, scenario, regr_vars, multiplier, baseline,
     # n_data refers to the amount of training data
     mll = gpytorch.mlls.VariationalELBO(likelihood, model, num_data=trainY.numel())
     # Training function
-    def train(num_iter=500):
+    def train(num_iter=iterations):
         for i in range(num_iter):
             optimizer.zero_grad()
             output = model(trainX)

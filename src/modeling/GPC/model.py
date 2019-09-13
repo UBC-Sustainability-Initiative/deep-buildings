@@ -1,4 +1,5 @@
 import pickle
+import torch
 from gpytorch.models import AbstractVariationalGP
 from gpytorch.variational import AdditiveGridInterpolationVariationalStrategy, CholeskyVariationalDistribution
 from gpytorch.kernels import RBFKernel, ScaleKernel, MaternKernel
@@ -26,7 +27,6 @@ class GPClassificationModel(AbstractVariationalGP):
     
     
     def make_predictions(self, X, save_to):
-        
         #TODO ADAPT TO GPC
         
 #        preds_class = self.predict(X)
@@ -41,13 +41,9 @@ class GPClassificationModel(AbstractVariationalGP):
 #                
         return 0
     
-    
-    
-    
     def save(self, fname):
-        with open(fname, 'wb') as outfile:
-            pickle.dump(self, outfile, pickle.HIGHEST_PROTOCOL)
+        torch.save(self.state_dict(), fname)
             
     def load(self, fname):
-        with open(fname, 'rb') as infile:
-            return pickle.load(infile)
+        state_dict = torch.load(fname)
+        return self.load_state_dict(state_dict)
