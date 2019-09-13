@@ -29,7 +29,7 @@ def load_data(model,
     with open(fname+model+"/trainY.pkl", 'rb') as infile:
         trainY = pickle.load(infile)   
     with open(fname+model+"/testY.pkl", 'rb') as infile:
-        testX = pickle.load(infile) 
+        testY = pickle.load(infile) 
     
 #    trainY = train['trainY']
 #    train = train.drop('trainY', axis=1)
