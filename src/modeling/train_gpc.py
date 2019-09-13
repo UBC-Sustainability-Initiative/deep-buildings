@@ -68,7 +68,9 @@ def main(input_file, output_file, iterations, scenario, regr_vars, multiplier, b
     train()
 
     model.save(output_file)
-    #model.make_predictions(testX, save_to = 'data/output/GPC/preds.pkl')
+    print("Saved model to: ", output_file)
+    model.make_predictions(testX, testY, likelihood, 
+                           save_to = 'data/output/GPC/preds.pkl')
 
 if __name__ == '__main__':
     main()

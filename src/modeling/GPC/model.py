@@ -1,5 +1,6 @@
 import pickle
 import torch
+import pandas as pd
 from gpytorch.models import AbstractVariationalGP
 from gpytorch.variational import AdditiveGridInterpolationVariationalStrategy, CholeskyVariationalDistribution
 from gpytorch.kernels import RBFKernel, ScaleKernel, MaternKernel
@@ -26,20 +27,25 @@ class GPClassificationModel(AbstractVariationalGP):
         return latent_pred
     
     
-    def make_predictions(self, X, save_to):
-        #TODO ADAPT TO GPC
+    def make_predictions(self, X, Y, likelihood, save_to):
+
+        # Switch the model and likelihood into the evaluation mode
+        self.eval()
+        likelihood.eval()
         
-#        preds_class = self.predict(X)
-#        preds_proba = self.predict_proba(X)  
-#        preds_df = pd.DataFrame(data={'class':preds_class,
-#                                      'proba':preds_proba[:,1]}, 
-#                                      index = X.index)
-#
-#        if save_to: 
-#            with open(save_to, 'wb') as outfile:
-#                pickle.dump(preds_df, outfile, pickle.HIGHEST_PROTOCOL)
+        with torch.no_grad():
+            predictions = likelihood(self(X))
+
+        d = {'class': predictions.mean.ge(0.5).float().cpu(),
+             'proba':predictions.mean.float().cpu()}
+        
+        preds_df = pd.DataFrame(data = d, index = Y.index)
+                
+        if save_to: 
+            with open(save_to, 'wb') as outfile:
+                pickle.dump(preds_df, outfile, pickle.HIGHEST_PROTOCOL)
 #                
-        return 0
+        return preds_df
     
     def save(self, fname):
         torch.save(self.state_dict(), fname)
