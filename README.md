@@ -3,6 +3,10 @@ This repository employs several different machine learning methods (LSTM, gradie
 
 [Google CoLab notebook](https://colab.research.google.com/drive/1fEqECoHNKjTxuT4LC6wgYS1oVaH63IeE)
 
+To-Do:
+
+- Need to fix click arguments to ensure for any model, any list of parameters and manipulations can be passed (maybe it's better to provide the option to pass a .txt file with these specifications?)
+- Need to fix 'H' returning error for CatBoost
 
 Project Organization
 ------------
