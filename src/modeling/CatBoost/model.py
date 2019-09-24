@@ -36,6 +36,6 @@ class CatBoostModel(cb.CatBoostClassifier):
         with open(fname, 'wb') as outfile:
             pickle.dump(self, outfile, pickle.HIGHEST_PROTOCOL)
 
-    def load(self, fname):
+    def load(fname):
         with open(fname, 'rb') as infile:
             return pickle.load(infile)
