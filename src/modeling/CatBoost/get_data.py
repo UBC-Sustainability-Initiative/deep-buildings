@@ -91,7 +91,13 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
           look_ahead.append(look_ahead[i])
           Xp[maxstr] = Xp[regression_variables[i]].resample('D').max()
           Xp[regression_variables[i]]=Xp[regression_variables[i]].resample('D').mean()
-    
+
+        elif multiplier[i]==-666: # Take max of hourly data
+          maxstr = regression_variables[i]+'_max'
+          regression_variables.append(maxstr)
+          look_back.append(look_back[i])
+          look_ahead.append(look_ahead[i])
+          Xp[maxstr] = Xp[regression_variables[i]].resample('D').max()
       Xp=Xp.resample('D').sum() # Xp will not be fully resampled to daily values, so this cleans everything up.
     
       # Apply look ahead and look back values

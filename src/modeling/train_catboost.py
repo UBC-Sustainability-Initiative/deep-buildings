@@ -15,7 +15,7 @@ from data.preprocess import read_processed_data
                                         'hum_ratio','windspeed','weekday',
                                         'week'], show_default=True)
 
-@click.option('--multiplier', default = [-777,-777,-999,-999,-999,-999,-999],
+@click.option('--multiplier', default = [-666,-777,-999,-999,-999,-999,-999],
               show_default = True)
 @click.option('--baseline', default = [0,0,0,0,0,0,0], show_default = True)
 
@@ -40,11 +40,6 @@ def main(input_file, output_file, frequency, scenario, regr_vars, multiplier, ba
     print("Generated data for CatBoost")
     print('Training model...')
     model = CatBoostModel()
-    # For future climate data, drop the columns we don't have data for:
-    trainX = trainX.drop(['solar_radiation', 'last_solar_radiation_1',
-                          'last_solar_radiation_2'], axis = 1)
-    testX = testX.drop(['solar_radiation', 'last_solar_radiation_1',
-                          'last_solar_radiation_2'], axis = 1)
     model.train(trainX, trainY)
     model.save_model(output_file)
     model.make_predictions(testX, save_to = 'data/output/CatBoost/preds.pkl')
