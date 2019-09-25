@@ -38,6 +38,7 @@ def main(input_file, output_file, frequency, scenario, regr_vars, multiplier, ba
                                                     save_data = True,
                                                     pname = 'data/processed/CatBoost/')
     print("Generated data for CatBoost")
+    print('Using as training features: ', trainX.columns)
     print('Training model...')
     model = CatBoostModel()
     model.train(trainX, trainY)
