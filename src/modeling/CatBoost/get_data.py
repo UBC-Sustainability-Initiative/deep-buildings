@@ -98,6 +98,8 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
           look_back.append(look_back[i])
           look_ahead.append(look_ahead[i])
           Xp[maxstr] = Xp[regression_variables[i]].resample('D').max()
+          regression_variables[i]
+          
       Xp=Xp.resample('D').sum() # Xp will not be fully resampled to daily values, so this cleans everything up.
     
       # Apply look ahead and look back values
@@ -113,7 +115,14 @@ def generate_data(df, freq: str, scenario: int, regr_vars = None,
             Xp[header_str]=Xp[regression_variables[i]].shift(-x-1)
     
       X = Xp # Reframe X based on Xp
-    
+      
+      future_climate = 1
+      if future_climate:
+          # drop solar radiation columns
+          X = X.drop(['solar_radiation', 'last_solar_radiation_2',
+                      'last_solar_radiation_1'], axis = 1)
+          
+          
       if scenario == 1:
         
       # Apply ASHRAE Adaptive Comfort model criteria to classify hot days vs. non-hot days
